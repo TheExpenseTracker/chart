@@ -1,0 +1,105 @@
+{% extends 'partials/base.html' %}
+
+{% block content %}
+
+    <div class="row mt-5">
+        <div class="col-md-4 mt-2">
+            <h4>Enter your expenses here</h4>
+            <hr>
+
+            <form action="" method="POST">
+                {% csrf_token %}
+
+                {{ form }}
+
+                <input class="btn btn-success mt-2" type="submit" value="Add Data">
+
+            </form>
+
+        </div>
+
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6 mt-2">
+                    <h4>Expense and Income</h4>
+                    <hr>
+                    <canvas id="expenseAndIncomeChart" width="400" height="250"></canvas>
+                </div>
+                <div class="col-md-6 mt-2">
+                    <h4>Expense by Category</h4>
+                    <hr>
+                    <canvas id="expensebycategory" width="400" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('expenseAndIncomeChart').getContext('2d');
+    var expenseAndIncomeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for product in products %} '{{ product.date }}', {% endfor %}],
+            datasets: [{
+                label: 'Expense',
+                data: [{% for product in products %} {{ product.expense }}, {% endfor %}],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false
+            }, {
+                label: 'Income',
+                data: [{% for product in products %} {{ product.income }}, {% endfor %}],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+        var ctx2 = document.getElementById('expensebycategory').getContext('2d');
+        var myChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: [{% for product in products %}  '{{ product.category }}',  {% endfor %}],
+                datasets: [{
+                    label: '# of Products',
+                    data: [{% for product in products %}  {{ product.expense }},  {% endfor %}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)',
+                        'rgba(240, 120, 50, 0.8)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(240, 120, 50, 1)',
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock %}
