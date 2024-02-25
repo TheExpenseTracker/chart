@@ -10,7 +10,7 @@
             <form action="" method="POST">
                 {% csrf_token %}
 
-                {{ form }}
+                {{ form.as_p }}
 
                 <input class="btn btn-success mt-2" type="submit" value="Add Data">
 
@@ -30,6 +30,14 @@
                     <hr>
                     <canvas id="expensebycategory" width="400" height="250"></canvas>
                 </div>
+            <div class="row mt-5">
+                <div class="col-md-8">
+                    <h4>View your expense habit</h4>
+                    <hr>
+                     <canvas id="expenseScatterChart" width="400" height="250"></canvas>
+                    </div>
+                </div>
+            
             </div>
         </div>
     </div>
@@ -99,7 +107,60 @@
                     }
                 }
             }
+        });    
+    
+        var dates = [
+            {% for product in products %}
+                '{{ product.date|date:"Y-m-d" }}',
+            {% endfor %}
+        ];
+    
+        var expenses = [
+            {% for product in products %}
+                {{ product.expense }},
+            {% endfor %}
+        ];
+    
+        // Combine dates and expenses into datasets
+        var data = [];
+        for (var i = 0; i < dates.length; i++) {
+            data.push({x: dates[i], y: expenses[i]});
+        }
+    
+        // Sort data by date
+        data.sort(function(a, b) {
+            return new Date(a.x) - new Date(b.x);
+        });
+    
+        // Split sorted data back into dates and expenses
+        var sortedDates = [];
+        var sortedExpenses = [];
+        for (var i = 0; i < data.length; i++) {
+            sortedDates.push(data[i].x);
+            sortedExpenses.push(data[i].y);
+        }
+    
+        // Create chart using sorted data
+        var ctx = document.getElementById('expenseAndIncomeChart').getContext('2d');
+        var expenseAndIncomeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedDates,
+                datasets: [{
+                    label: 'Expense',
+                    data: sortedExpenses,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
         });
     </script>
-
 {% endblock %}

@@ -9,5 +9,6 @@ class ProductForm(forms.ModelForm):
             'category': forms.TextInput(attrs={'class': 'form-control'}),
             'expense': forms.TextInput(attrs={'class': 'form-control'}),
             'income': forms.TextInput(attrs={'class': 'form-control'}),
-            'date': forms.TextInput(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'class': 'form-control'}),
+
         }
